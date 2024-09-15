@@ -26,7 +26,8 @@ class Category(models.Model):
 class Product(models.Model):
     # String Fields
     name = models.CharField(max_length=200, unique=True)
-    slug = models.CharField(max_length=200, unique=True)
+    description = models.TextField(blank=True)
+    slug = models.SlugField(max_length=200, unique=True)
     
     # Numeric Fields
     price = models.IntegerField()

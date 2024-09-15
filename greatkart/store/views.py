@@ -1,4 +1,5 @@
-from django.views.generic import TemplateView
+from django.shortcuts import get_object_or_404
+from django.views.generic import TemplateView, DetailView
 from .models import Product, Category
 
 class StoreView(TemplateView):
@@ -6,6 +7,7 @@ class StoreView(TemplateView):
     
     from django.views.generic import TemplateView
 from .models import Product, Category
+
 
 class StoreView(TemplateView):
     template_name = 'store.html'
@@ -23,13 +25,20 @@ class StoreView(TemplateView):
         category_slug = kwargs.get('category_slug')
         
         if category_slug:
-            context['products'] = Product.objects.all().filter(is_available=True, category__slug=category_slug)
-            context['products_count'] = len(context['products'])
+            category_obj = get_object_or_404(Category, slug=category_slug)
+            context['products'] = Product.objects.all().filter(is_available=True, category=category_obj)
         else:
             context['products'] = Product.objects.all().filter(is_available=True)
-            context['products_count'] = Product.objects.count()
 
-        context['categories'] = Category.objects.all()
+        context['products_count'] = len(context['products'])
 
         # Return the context to be passed to the template
         return context
+
+
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = 'product_detail.html'
+    context_object_name = 'product'
+    slug_field = 'slug'
+    slug_url_kwarg = 'product_slug'
