@@ -20,8 +20,16 @@ class CartItem(models.Model):
     
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
-    quantity = models.IntegerField()
+    quantity = models.IntegerField(default=0)
     status = models.IntegerField(choices=STATUS_CHOICES, default=1)
+    
+    
+    def increase_quantity(self):
+        max_prod_quantity = Product.objects.get(id=self.product.id).stock_quantity
+        self.quantity = min(self.quantity + 1, max_prod_quantity)
+    
+    def decrease_quantity(self):
+        self.quantity = max(0, self.quantity - 1)
     
     def __str__(self):
         return self.product.name

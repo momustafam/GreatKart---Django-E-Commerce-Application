@@ -7,7 +7,14 @@
     <div class="container">
 
         <!-- ============================ COMPONENT 1 ================================= -->
-
+        {% if not cartItems %}
+        <h2 class="text-center"> Your Shopping Cart Is Empty </h2>
+        <br>
+        <div class="text-center">
+            <a href="{% url 'store' %}" class="btn btn-primary"> Continue Shopping </a>
+        </div>
+        <br>
+        {% else %}
         <div class="row">
             <aside class="col-lg-9">
                 <div class="card">
@@ -21,12 +28,15 @@
                             </tr>
                         </thead>
                         <tbody>
+                            {% for cartItem in cartItems %}
                             <tr>
                                 <td>
                                     <figure class="itemside align-items-center">
-                                        <div class="aside"><img src="./images/items/11.jpg" class="img-sm"></div>
+                                        <div class="aside"><img src="{{ cartItem.product.image.url }}" class="img-sm">
+                                        </div>
                                         <figcaption class="info">
-                                            <a href="#" class="title text-dark">Camera Canon EOS M50 Kit</a>
+                                            <a href="{% url 'product_detail' cartItem.product.category.slug  cartItem.product.slug %}"
+                                                class="title text-dark">{{ cartItem.product.name}}</a>
                                             <p class="text-muted small">Matrix: 25 Mpx <br> Brand: Canon</p>
                                         </figcaption>
                                     </figure>
@@ -36,27 +46,31 @@
                                     <div class="col">
                                         <div class="input-group input-spinner">
                                             <div class="input-group-prepend">
-                                                <button class="btn btn-light" type="button" id="button-plus"> <i
-                                                        class="fa fa-minus"></i> </button>
+                                                <a href="{% url 'decrease_cart_item_quantity' cartItem.id %}"
+                                                    class="btn btn-light" type="button" id="button-plus">
+                                                    <i class="fa fa-minus"></i>
+                                                </a>
                                             </div>
-                                            <input type="text" class="form-control" value="1">
+                                            <input type="text" class="form-control" value="{{ cartItem.quantity }}">
                                             <div class="input-group-append">
-                                                <button class="btn btn-light" type="button" id="button-minus"> <i
-                                                        class="fa fa-plus"></i> </button>
+                                                <a href="{% url 'increase_cart_item_quantity' cartItem.id %}"
+                                                    class="btn btn-light" type="button" id="button-minus">
+                                                    <i class="fa fa-plus"></i> </a>
                                             </div>
                                         </div> <!-- input-group.// -->
                                     </div> <!-- col.// -->
                                 </td>
                                 <td>
                                     <div class="price-wrap">
-                                        <var class="price">$1156.00</var>
-                                        <small class="text-muted"> $315.20 each </small>
+                                        <var class="price">${{ cartItem.total_price }}</var>
+                                        <small class="text-muted"> ${{ cartItem.product.price }} each </small>
                                     </div> <!-- price-wrap .// -->
                                 </td>
                                 <td class="text-right">
-                                    <a href="" class="btn btn-danger"> Remove</a>
+                                    <a href="{% url 'remove_cart_item' cartItem.id %}" class="btn btn-danger">Remove</a>
                                 </td>
                             </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div> <!-- card.// -->
@@ -68,15 +82,15 @@
                     <div class="card-body">
                         <dl class="dlist-align">
                             <dt>Total price:</dt>
-                            <dd class="text-right">$69.97</dd>
-                        </dl>
+                            <dd class="text-right">${{ bill }}</dd>
+                        </dl>s
                         <dl class="dlist-align">
-                            <dt>Tax:</dt>
-                            <dd class="text-right"> $10.00</dd>
+                            <dt>shipping fee:</dt>
+                            <dd class="text-right"> $00.00</dd>
                         </dl>
                         <dl class="dlist-align">
                             <dt>Total:</dt>
-                            <dd class="text-right text-dark b"><strong>$59.97</strong></dd>
+                            <dd class="text-right text-dark b"><strong>${{ bill }}</strong></dd>
                         </dl>
                         <hr>
                         <p class="text-center mb-3">
@@ -95,4 +109,5 @@
 
     </div> <!-- container .//  -->
 </section>
+{% endif %}
 {% endblock %}
